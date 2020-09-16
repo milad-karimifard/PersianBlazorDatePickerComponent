@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersianBlazorDatePickerComponent", "PersianBlazorDatePickerComponent\PersianBlazorDatePickerComponent.csproj", "{302AE0D0-8D60-4A3B-B3A1-49B0A2EB8251}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{302AE0D0-8D60-4A3B-B3A1-49B0A2EB8251}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{302AE0D0-8D60-4A3B-B3A1-49B0A2EB8251}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{302AE0D0-8D60-4A3B-B3A1-49B0A2EB8251}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{302AE0D0-8D60-4A3B-B3A1-49B0A2EB8251}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {70A94F1C-D147-4638-869F-09F37E735B20}
+	EndGlobalSection
+EndGlobal
