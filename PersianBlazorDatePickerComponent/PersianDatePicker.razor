@@ -1,3 +1,211 @@
-﻿<div class="my-component">
-    This Blazor component is defined in the <strong>PersianBlazorDatePickerComponent</strong> package.
+﻿@using System.Globalization
+<div class="date-picker" @onclick="ToggleActiveDatePicker">
+    <div class="selected-date">@_selectedDate</div>
+    <div class="dates @(_datePickerClass)" @onclick="SetClickInsideElement">
+        <div class="month">
+            <div @onclick="GoToNextMonth" class="arrows prev-mth"><img src="_content/PersianBlazorDatePickerComponent/icons/left.svg" alt="" class="arrow"></div>
+            <div class="mth"><span @onclick="ToggleMonthSelect" class="ym">@_currentShortMonth</span> <span @onclick="ToggleYearSelect" class="ym">@_currentShortYear</span></div>
+            <div @onclick="GoToPreviousMonth" class="arrows next-mth"><img src="_content/PersianBlazorDatePickerComponent/icons/right.svg" alt="" class="arrow"></div>
+        </div>
+        <div class="days">
+            @for (int i = 0; i < _monthDays; i++)
+            {
+                int day = i + 1;
+                <div class="day @(IsToday(day,"day") ? "selected-day" : "")" @onclick="() => SetNewDate(day)">@(day)</div>
+            }
+        </div>
+        <div class="buttons">
+            <div class="btns" @onclick="SetToday">امروز</div>
+            <div class="btns" @onclick="CloseDatePicker">انصراف</div>
+        </div>
+        <div class="years-cont @(_showYearSelect ? "years-select-active":"")" @onclick="SetClickInsideElement">
+            <div class="y-m-btns-cont">
+                <div class="cancel-cont">
+                    <div @onclick="ToggleYearSelect" class="cancel-btn">انصراف</div>
+                </div>
+                <div @onclick="() => ChangeYearRange(-25)" class="lr-btns pull-right">
+                    <img src="_content/PersianBlazorDatePickerComponent/icons/right.svg" alt="" class="year-arrow">
+                </div>
+                <div @onclick="() => ChangeYearRange(25)" class="lr-btns pull-left">
+                    <img src="_content/PersianBlazorDatePickerComponent/icons/left.svg" alt="" class="year-arrow">
+                </div>
+            </div>
+            <div class="y-holder">
+                @for (int i = 0; i < 24; i++)
+                {
+                    int year = _currentYear + i;
+                    <div @onclick="() => SetNowDate(year,0)" class="the-m @(IsToday(year,"year") ? "selected-day" : "")">@year</div>
+                }
+            </div>
+        </div>
+        <div class="months-cont @(_showMonthSelect ? "months-select-active":"")" @onclick="SetClickInsideElement">
+            <div class="y-m-btns-cont">
+                <div class="cancel-cont">
+                    <div @onclick="ToggleMonthSelect" class="cancel-btn">انصراف</div>
+                </div>
+            </div>
+            <div class="m-holder">
+                @for (int i = 1; i <= 12; i++)
+                {
+                    int j = i;
+                    <div @onclick="() => SetNowDate(0,j)" class="the-m @(IsToday(j,"month") ? "selected-day" : "")">@(PersianUtility.GetMonthName(i))</div>
+                }
+            </div>
+        </div>
+    </div>
 </div>
+
+@code {
+    string _datePickerClass = "";
+    string _selectedDate = "";
+    string _currentShortYear = "";
+    string _currentShortMonth = "";
+
+    int _currentYear = 0;
+    int _monthDays = 0;
+
+    DateTime _now;
+    DateTime _selectedDateTime = new DateTime(1, 1, 1);
+
+    bool _isClickInside = false;
+    bool _showYearSelect = false;
+    bool _showMonthSelect = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() =>
+        {
+            _now = DateTime.Today;
+            _selectedDateTime = DateTime.Today;
+            _currentYear = PersianUtility.GetYear<int>(_selectedDateTime);
+            GetMonthDays();
+            GetSelectedDate();
+            GetShortSelectedDate();
+        });
+    }
+
+    private void GetSelectedDate()
+    {
+        _selectedDate = PersianUtility.ConvertToPersianCalender(_selectedDateTime);
+    }
+
+    private void GetShortSelectedDate()
+    {
+        _currentShortYear = PersianUtility.GetYear<string>(_now);
+        _currentShortMonth = PersianUtility.GetMonth<string>(_now);
+    }
+
+    private void GoToNextMonth()
+    {
+        _now = _now.AddMonths(1);
+        SetClickInsideElement();
+        GetMonthDays();
+        GetShortSelectedDate();
+        base.StateHasChanged();
+    }
+
+    private void GoToPreviousMonth()
+    {
+        _now = _now.AddMonths(-1);
+        SetClickInsideElement();
+        GetMonthDays();
+        GetShortSelectedDate();
+        StateHasChanged();
+    }
+
+    private void SetNewDate(int day)
+    {
+        int year = PersianUtility.GetYear<int>(_now);
+        int month = PersianUtility.GetMonth<int>(_now);
+
+        _selectedDateTime = new DateTime(year, month, day, new PersianCalendar());
+        _now = new DateTime(year, month, day, new PersianCalendar());
+        _currentYear = year;
+
+        GetSelectedDate();
+        GetShortSelectedDate();
+        StateHasChanged();
+    }
+
+    private void SetNowDate(int year, int month)
+    {
+        int persianYear = year == 0 ? PersianUtility.GetYear<int>(_now) : year;
+        int persianMonth = month == 0 ? PersianUtility.GetMonth<int>(_now) : month;
+        int day = PersianUtility.GetDaysOfMonth(_now);
+
+        _now = new DateTime(persianYear, persianMonth, day, new PersianCalendar());
+        _currentYear = year;
+
+        GetShortSelectedDate();
+        GetMonthDays();
+        GetShortSelectedDate();
+
+        if (year == 0)
+        {
+            ToggleMonthSelect();
+        }
+        else
+        {
+            ToggleYearSelect();
+        }
+        StateHasChanged();
+    }
+
+    private void GetMonthDays()
+    {
+        _monthDays = PersianUtility.GetDaysInMonth(_now);
+        base.StateHasChanged();
+    }
+
+    private void SetToday()
+    {
+        _now = DateTime.Today;
+        _selectedDateTime = DateTime.Today;
+
+        GetMonthDays();
+        GetSelectedDate();
+        GetShortSelectedDate();
+        SetClickInsideElement();
+    }
+
+    private void ToggleYearSelect()
+    {
+        _showYearSelect = !_showYearSelect;
+        SetClickInsideElement();
+    }
+
+    private void ToggleMonthSelect()
+    {
+        _showMonthSelect = !_showMonthSelect;
+        SetClickInsideElement();
+    }
+
+    private void ChangeYearRange(int parameter)
+    {
+        _currentYear += parameter;
+        SetClickInsideElement();
+    }
+
+    private void ToggleActiveDatePicker()
+    {
+        if (!_isClickInside)
+            _datePickerClass = string.IsNullOrEmpty(_datePickerClass) ? "active" : "";
+        _isClickInside = false;
+    }
+
+    private void CloseDatePicker()
+    {
+        _isClickInside = false;
+        ToggleActiveDatePicker();
+    }
+
+    private void SetClickInsideElement()
+    {
+        _isClickInside = true;
+    }
+
+    private bool IsToday(int item, string mode)
+    {
+        return PersianUtility.IsToday(_selectedDateTime, _now, item, mode);
+    }
+}
