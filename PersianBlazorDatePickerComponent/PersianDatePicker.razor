@@ -64,6 +64,14 @@
     [Parameter]
     public DateTime MaxDateTime { get; set; }
 
+    [Parameter]
+    public DateTime SelectedDateTime { get; set; } = new DateTime(1, 1, 1);
+
+    [Parameter]
+    public EventCallback<DateTime> SelectedDateTimeValueChanged { get; set; }
+
+    DateTime _now;
+
     string _datePickerClass = "";
     string _selectedDate = "";
     string _currentShortYear = "";
@@ -71,9 +79,6 @@
 
     int _currentYear = 0;
     int _monthDays = 0;
-
-    DateTime _now;
-    DateTime _selectedDateTime = new DateTime(1, 1, 1);
 
     bool _isClickInside = false;
     bool _showYearSelect = false;
@@ -90,18 +95,23 @@
             await Task.Run(() =>
             {
                 _now = DateTime.Today;
-                _selectedDateTime = DateTime.Today;
-                _currentYear = PersianUtility.GetYear<int>(_selectedDateTime);
+                SelectedDateTime = DateTime.Today;
+                _currentYear = PersianUtility.GetYear<int>(SelectedDateTime);
                 GetMonthDays();
                 GetSelectedDate();
                 GetShortSelectedDate();
-            }); 
+            });
         }
+    }
+
+    async Task UpdateSelectedDateTimeValue()
+    {
+        await SelectedDateTimeValueChanged.InvokeAsync(SelectedDateTime);
     }
 
     private void GetSelectedDate()
     {
-        _selectedDate = PersianUtility.ConvertToPersianCalender(_selectedDateTime);
+        _selectedDate = PersianUtility.ConvertToPersianCalender(SelectedDateTime);
     }
 
     private void GetShortSelectedDate()
@@ -128,16 +138,18 @@
         StateHasChanged();
     }
 
-    private void SetNewDate(int day,bool isActive)
+    private async Task SetNewDate(int day,bool isActive)
     {
         if (isActive)
         {
             int year = PersianUtility.GetYear<int>(_now);
             int month = PersianUtility.GetMonth<int>(_now);
 
-            _selectedDateTime = new DateTime(year, month, day, new PersianCalendar());
+            SelectedDateTime = new DateTime(year, month, day, new PersianCalendar());
             _now = new DateTime(year, month, day, new PersianCalendar());
             _currentYear = year;
+
+            await UpdateSelectedDateTimeValue();
 
             GetSelectedDate();
             GetShortSelectedDate();
@@ -175,10 +187,12 @@
         base.StateHasChanged();
     }
 
-    private void SetToday()
+    private async Task SetToday()
     {
         _now = DateTime.Today;
-        _selectedDateTime = DateTime.Today;
+        SelectedDateTime = DateTime.Today;
+
+        await UpdateSelectedDateTimeValue();
 
         GetMonthDays();
         GetSelectedDate();
@@ -224,7 +238,7 @@
 
     private bool IsToday(int item, string mode)
     {
-        return PersianUtility.IsToday(_selectedDateTime, _now, item, mode);
+        return PersianUtility.IsToday(SelectedDateTime, _now, item, mode);
     }
 
     private bool IsDayActive(int day)
