@@ -1,7 +1,10 @@
 ﻿@using System.Globalization
 <div class="date-picker" @onclick="ToggleActiveDatePicker">
     <div class="selected-date">@_selectedDate</div>
-    <div class="dates @(_datePickerClass)" @onclick="SetClickInsideElement">
+</div>
+
+<div class="modalbox @(_datePickerClass)">
+    <div class="dates" @onclick="SetClickInsideElement">
         <div class="month">
             <div @onclick="GoToNextMonth" class="arrows prev-mth"><img src="_content/PersianBlazorDatePickerComponent/icons/left.svg" alt="" class="arrow"></div>
             <div class="mth"><span @onclick="ToggleMonthSelect" class="ym">@_currentShortMonth</span> <span @onclick="ToggleYearSelect" class="ym">@_currentShortYear</span></div>
@@ -35,7 +38,7 @@
                 @for (int i = 0; i < 24; i++)
                 {
                     int year = _currentYear + i;
-                    <div @onclick="() => SetNowDate(year,0)" class="the-m @(IsToday(year,"year") ? "selected-day" : "")">@year</div>
+                    <div @onclick="() => SetNowDate(year,0)" class="the-m @(IsToday(year,"year") ? "selected-other" : "")">@year</div>
                 }
             </div>
         </div>
@@ -49,7 +52,7 @@
                 @for (int i = 1; i <= 12; i++)
                 {
                     int j = i;
-                    <div @onclick="() => SetNowDate(0,j)" class="the-m @(IsToday(j,"month") ? "selected-day" : "")">@(PersianUtility.GetMonthName(i))</div>
+                    <div @onclick="() => SetNowDate(0,j)" class="the-m @(IsToday(j,"month") ? "selected-other" : "")">@(PersianUtility.GetMonthName(i))</div>
                 }
             </div>
         </div>
@@ -164,7 +167,7 @@
         int day = PersianUtility.GetDaysOfMonth(_now);
 
         _now = new DateTime(persianYear, persianMonth, day, new PersianCalendar());
-        _currentYear = year;
+        _currentYear = persianYear;
 
         GetShortSelectedDate();
         GetMonthDays();
