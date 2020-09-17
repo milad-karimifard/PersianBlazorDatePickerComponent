@@ -1,8 +1,4 @@
 ﻿@using System.Globalization
-<div class="date-picker" @onclick="ToggleActiveDatePicker">
-    <div class="selected-date">@_selectedDate</div>
-</div>
-
 <div class="modalbox @(_datePickerClass)">
     <div class="dates" @onclick="SetClickInsideElement">
         <div class="month">
@@ -76,7 +72,6 @@
     DateTime _now;
 
     string _datePickerClass = "";
-    string _selectedDate = "";
     string _currentShortYear = "";
     string _currentShortMonth = "";
 
@@ -101,7 +96,6 @@
                 SelectedDateTime = DateTime.Today;
                 _currentYear = PersianUtility.GetYear<int>(SelectedDateTime);
                 GetMonthDays();
-                GetSelectedDate();
                 GetShortSelectedDate();
             });
         }
@@ -110,11 +104,6 @@
     async Task UpdateSelectedDateTimeValue()
     {
         await SelectedDateTimeValueChanged.InvokeAsync(SelectedDateTime);
-    }
-
-    private void GetSelectedDate()
-    {
-        _selectedDate = PersianUtility.ConvertToPersianCalender(SelectedDateTime);
     }
 
     private void GetShortSelectedDate()
@@ -154,7 +143,6 @@
 
             await UpdateSelectedDateTimeValue();
 
-            GetSelectedDate();
             GetShortSelectedDate();
             StateHasChanged();
         }
@@ -198,7 +186,6 @@
         await UpdateSelectedDateTimeValue();
 
         GetMonthDays();
-        GetSelectedDate();
         GetShortSelectedDate();
         SetClickInsideElement();
     }
@@ -221,7 +208,7 @@
         SetClickInsideElement();
     }
 
-    private void ToggleActiveDatePicker()
+    public void ToggleActiveDatePicker()
     {
         if (!_isClickInside)
             _datePickerClass = string.IsNullOrEmpty(_datePickerClass) ? "active" : "";
