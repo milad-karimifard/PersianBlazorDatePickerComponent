@@ -11,7 +11,8 @@
             @for (int i = 0; i < _monthDays; i++)
             {
                 int day = i + 1;
-                <div class="day @(IsToday(day,"day") ? "selected-day" : "")" @onclick="() => SetNewDate(day)">@(day)</div>
+                bool isActive = IsDayActive(day);
+                <div class="day @(IsToday(day,"day") ? "selected-day" : "") @(!isActive ? "disable-day" : "")" @onclick="() => SetNewDate(day,isActive)">@(day)</div>
             }
         </div>
         <div class="buttons">
@@ -56,6 +57,13 @@
 </div>
 
 @code {
+
+    [Parameter]
+    public DateTime MinDateTime { get; set; }
+
+    [Parameter]
+    public DateTime MaxDateTime { get; set; }
+
     string _datePickerClass = "";
     string _selectedDate = "";
     string _currentShortYear = "";
@@ -73,15 +81,22 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Run(() =>
+        if (MinDateTime == default(DateTime) || MaxDateTime == default(DateTime))
         {
-            _now = DateTime.Today;
-            _selectedDateTime = DateTime.Today;
-            _currentYear = PersianUtility.GetYear<int>(_selectedDateTime);
-            GetMonthDays();
-            GetSelectedDate();
-            GetShortSelectedDate();
-        });
+            Console.WriteLine("You Must Input Valid Min & Max DateTime");
+        }
+        else
+        {
+            await Task.Run(() =>
+            {
+                _now = DateTime.Today;
+                _selectedDateTime = DateTime.Today;
+                _currentYear = PersianUtility.GetYear<int>(_selectedDateTime);
+                GetMonthDays();
+                GetSelectedDate();
+                GetShortSelectedDate();
+            }); 
+        }
     }
 
     private void GetSelectedDate()
@@ -113,18 +128,21 @@
         StateHasChanged();
     }
 
-    private void SetNewDate(int day)
+    private void SetNewDate(int day,bool isActive)
     {
-        int year = PersianUtility.GetYear<int>(_now);
-        int month = PersianUtility.GetMonth<int>(_now);
+        if (isActive)
+        {
+            int year = PersianUtility.GetYear<int>(_now);
+            int month = PersianUtility.GetMonth<int>(_now);
 
-        _selectedDateTime = new DateTime(year, month, day, new PersianCalendar());
-        _now = new DateTime(year, month, day, new PersianCalendar());
-        _currentYear = year;
+            _selectedDateTime = new DateTime(year, month, day, new PersianCalendar());
+            _now = new DateTime(year, month, day, new PersianCalendar());
+            _currentYear = year;
 
-        GetSelectedDate();
-        GetShortSelectedDate();
-        StateHasChanged();
+            GetSelectedDate();
+            GetShortSelectedDate();
+            StateHasChanged();
+        }
     }
 
     private void SetNowDate(int year, int month)
@@ -207,5 +225,10 @@
     private bool IsToday(int item, string mode)
     {
         return PersianUtility.IsToday(_selectedDateTime, _now, item, mode);
+    }
+
+    private bool IsDayActive(int day)
+    {
+        return PersianUtility.IsDateTimeInRange(_now, MinDateTime, MaxDateTime, day);
     }
 }

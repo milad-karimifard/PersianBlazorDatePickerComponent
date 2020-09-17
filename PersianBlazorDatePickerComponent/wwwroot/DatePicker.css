@@ -1,28 +1,4 @@
 ﻿/* Date Picker */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background-color: #FFCE00;
-    font-family: 'Saira', Arial, Helvetica, sans-serif;
-}
-
-h1 {
-    margin: 30px 0px;
-    color: #313131;
-    font-size: 42px;
-    font-weight: 900;
-    text-align: center;
-}
-
-    h1 span {
-        font-weight: 300;
-    }
-
 .date-picker {
     position: relative;
     width: 100%;
@@ -342,4 +318,8 @@ h1 {
 
 .months-select-active {
     display: block;
+}
+
+.disable-day {
+    color: #b3b3b3 !important;
 }

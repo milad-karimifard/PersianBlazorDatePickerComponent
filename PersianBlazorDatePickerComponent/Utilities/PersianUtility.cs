@@ -126,5 +126,19 @@ namespace PersianBlazorDatePickerComponent.Utilities
                 return false;
             }
         }
+
+        public static bool IsDateTimeInRange(DateTime date, DateTime min, DateTime max, int day)
+        {
+            try
+            {
+                DateTime currentDate = new DateTime(date.Year,date.Month,day);
+                
+                return min <= currentDate && currentDate <= max;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }
