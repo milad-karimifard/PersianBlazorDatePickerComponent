@@ -5,5 +5,24 @@
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+<button @onclick="OpenDatePicker" class="btn btn-dark">open</button>
+<h2 class="btn btn-dark">@selectedDateTime.ToString()</h2>
+<PersianDatePicker @ref="myDatePicker"
+                   SelectedDateTimeValueChanged="ClickHandler"
+                   MinDateTime=DateTime.Now.AddYears(-10)
+                   MaxDateTime=DateTime.Now.AddYears(10) />
+@code
+{
+    private PersianDatePicker myDatePicker;
+    DateTime selectedDateTime;
 
-<PersianDatePicker MinDateTime=DateTime.Now.AddYears(-10) MaxDateTime=DateTime.Now.AddYears(10) />
+    void ClickHandler(DateTime date)
+    {
+        selectedDateTime = date;
+    }
+
+    private void OpenDatePicker()
+    {
+        myDatePicker.ToggleActiveDatePicker();
+    }
+}
