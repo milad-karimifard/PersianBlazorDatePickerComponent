@@ -69,11 +69,11 @@ namespace PersianBlazorDatePickerComponent.Utilities
 
             if (typeof(T) == typeof(string))
             {
-                return (T)Convert.ChangeType(ps.GetYear(date).ToString("0000"),typeof(T));
+                return (T)Convert.ChangeType(ps.GetYear(date).ToString("0000"), typeof(T));
             }
             else if (typeof(T) == typeof(int))
             {
-                return (T)Convert.ChangeType(ps.GetYear(date),typeof(T));
+                return (T)Convert.ChangeType(ps.GetYear(date), typeof(T));
             }
             return default(T);
         }
@@ -94,7 +94,7 @@ namespace PersianBlazorDatePickerComponent.Utilities
             return ps.GetDaysInMonth(year, month);
         }
 
-        public static bool IsToday(DateTime selectedDate,DateTime currentDate,int item, string mode)
+        public static bool IsToday(DateTime selectedDate, DateTime currentDate, int item, string mode)
         {
             try
             {
@@ -131,13 +131,17 @@ namespace PersianBlazorDatePickerComponent.Utilities
         {
             try
             {
-                DateTime currentDate = new DateTime(date.Year,date.Month,day);
-                
+                DateTime currentDate = new DateTime(date.Year, date.Month, day);
+
                 return min <= currentDate && currentDate <= max;
             }
             catch
             {
-                return false;
+                int difrence = DateTime.DaysInMonth(date.Year, date.Month);
+
+                DateTime currentDate = new DateTime(date.Year, date.Month + 1, (day - difrence));
+
+                return min <= currentDate && currentDate <= max;
             }
         }
     }
